@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import ComposeForm from "./ComposeForm";
 
 interface Email {
@@ -16,11 +17,45 @@ const Home: React.FC = () => {
   useEffect(() => {
     // Mock data for demonstration
     const mockEmails: Email[] = [
-      { id: 1, subject: "First Email", body: "This is the body of the first email." },
-      { id: 2, subject: "Second Email", body: "This is the body of the second email." },
-      // Add more emails as needed
-    ];
+        { id: 1, subject: "First Email", body: "This is the body of the first email." },
+        { id: 2, subject: "Second Email", body: "This is the body of the second email." },
+        // Add more emails as needed
+      ];
+  
+      // Uncomment the following lines to fetch emails from your API or route
+      // const fetchEmails = async () => {
+      //   try {
+      //     const response = await fetch("/api/emails"); // replace with your actual API endpoint
+      //     const data = await response.json();
+      //     setEmails(data);
+      //   } catch (error) {
+      //     console.error("Error fetching emails:", error);
+      //   }
+      // };
+  
+      // Uncomment the following line to fetch emails from your API or route
+      // fetchEmails();
+  
+      const randomUsernames = ["JohnDoe", "AliceSmith", "BobJohnson", "EvaWilliams"];
+      const randomIndex = Math.floor(Math.random() * randomUsernames.length);
+      setRandomUsername(randomUsernames[randomIndex]);
+  
+      // Use mock data for now
+      setEmails(mockEmails);
+    }, []);
 
+  const handleComposeClick = () => {
+    setShowComposeModal(true);
+  };
+
+  const handleCloseComposeModal = () => {
+    setShowComposeModal(false);
+  };
+
+  const handleRefreshClick = () => {
+    // Add logic to fetch the latest emails
+    // For demonstration, let's clear the existing emails and reload them
+    setEmails([{ id: 1, subject: "lmao", body: "You like refreshing your inbox don't you?" }]);
     // Uncomment the following lines to fetch emails from your API or route
     // const fetchEmails = async () => {
     //   try {
@@ -34,28 +69,13 @@ const Home: React.FC = () => {
 
     // Uncomment the following line to fetch emails from your API or route
     // fetchEmails();
-
-    const randomUsernames = ["JohnDoe", "AliceSmith", "BobJohnson", "EvaWilliams"];
-    const randomIndex = Math.floor(Math.random() * randomUsernames.length);
-    setRandomUsername(randomUsernames[randomIndex]);
-
-    // Use mock data for now
-    setEmails(mockEmails);
-  }, []);
-
-  const handleComposeClick = () => {
-    setShowComposeModal(true);
-  };
-
-  const handleCloseComposeModal = () => {
-    setShowComposeModal(false);
   };
 
   return (
     <div>
       <div className="d-flex align-items-center">
         <img
-          src="/logo/Diffe-Mailman-Empty.png" // Assuming your assets are served from the public folder
+          src="/logo/Diffe-Mailman-Empty.png"
           alt="Diffe-Mailman Logo"
           style={{ width: "128px", height: "128px", marginRight: "15px" }}
         />
@@ -64,9 +84,15 @@ const Home: React.FC = () => {
 
       <p>Welcome to your inbox {randomUsername}.</p>
 
-      <Button variant="primary" onClick={handleComposeClick}>
-        Compose Email
-      </Button>
+      <div className="d-flex align-items-center mb-3">
+        <Button variant="primary" onClick={handleComposeClick}>
+          Compose Email
+        </Button>
+        <Button variant="light" onClick={handleRefreshClick} className="ms-2">
+          {/* Add your preferred refresh icon here */}
+          <i className="bi-arrow-clockwise"></i>
+        </Button>
+      </div>
 
       <ul className="list-group mt-3">
         {emails.map((email) => (
