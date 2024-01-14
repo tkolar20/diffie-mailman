@@ -15,20 +15,22 @@ const db = new sqlite3.Database('db/main.db', sqlite3.OPEN_READWRITE, (err) =>
 
 db.serialize(() =>
 {
-  const initSQL = fs.readFileSync("db/main.db").toString().split(');');
+  const initSQL = fs.readFileSync("db/init.sql").toString().split(');');
   db.run('PRAGMA foreign_keys=ON;');
-  db.run('BEGIN TRANSACTION;');
+  // db.run('BEGIN TRANSACTION;');
   initSQL.forEach((query =>
     {
       if(query)
       {
+        // db.run('BEGIN TRANSACTION;');
+        console.log(query);
         query += ");";
         db.run(query, (err) =>
         {
           if(err) throw err;
         });
       }
-      db.run("COMMIT;");
+      // db.run("COMMIT;");
     }));
 });
 
