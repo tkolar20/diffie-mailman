@@ -2,13 +2,13 @@ import { Request, Router, NextFunction } from "express";
 import { LoginData } from "../interfaces/IData.js";
 import { errorHandler } from "./middleware/ErrorHandler.js";
 
-var router = Router();
+const router = Router();
 
 router.post("/login", async (req: Request<unknown, unknown, LoginData, unknown>, res, next) =>
 {
-    const { email, password } = req.body;
     try
     {
+        const { email, password } = req.body;
         if(!(email || password))
         {
             throw { status: 400, message: "Username and passowrd must be supplied!" };
@@ -23,9 +23,9 @@ router.post("/login", async (req: Request<unknown, unknown, LoginData, unknown>,
 
 router.post("/register", async (req: Request<unknown, unknown, LoginData, unknown>, res, next) =>
 {
-    const { email, password } = req.body;
     try
     {
+        const { email, password } = req.body;
         if(!(email || password))
         {
             throw { status: 400, message: "Username and passowrd must be supplied!" };

@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import cors from "cors";
 import express from "express";
 import AuthRouter from "./routes/Auth.js";
+import MailRouter from "./routes/Mail.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +17,7 @@ const wss = new WebSocketServer({ server: server });
 
 app.use(cors());
 app.use("/api", AuthRouter);
+app.use("/api/mail", MailRouter);
 
 const PORTREACT = process.env.PORT || 3001;
 
@@ -68,20 +70,24 @@ wss.on('connection', ws =>
         {
             const sharedKey = serverDH.computeSecret(clientData.publickey, 'base64', 'base64');
             console.log("Shared secret:" + sharedKey);
+            const aesKey = crypto.createHash('sha256').update(sharedKey).digest();
         }
     });
 });
 
 app.use(express.static(path.join(__dirname, '../client/build')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+app.get('*', (req, res) =>
+{
+    res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 
-app.listen(PORTREACT, () => {
-  console.log(`Server is running on http://localhost:${PORTREACT}`);
+app.listen(PORTREACT, () =>
+{
+    console.log(`Server is running on http://localhost:${ PORTREACT }`);
 });
 
 const PORT = 4000;
-server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+server.listen(PORT, () =>
+{
+    console.log(`Server listening on port ${ PORT }`);
 });
