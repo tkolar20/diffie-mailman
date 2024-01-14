@@ -18,33 +18,33 @@ const Home: React.FC = () => {
   const [randomUsername, setRandomUsername] = useState("");
 
   useEffect(() => {
-    // Mock data for demonstration
+    // Mock data for demonstration, only used while backend wasn't done with routes.
     const mockEmails: Email[] = [
         { id: 1, subject: "First Email", sender:"tkolar20@example.com", body: "This is the body of the first email.", seen: true },
         { id: 2, subject: "Second Email", sender:"123luka321@example.com", body: "This is the body of the second email.", seen: false },
         // Add more emails as needed
       ];
   
-      // Uncomment the following lines to fetch emails from your API or route
-      // const fetchEmails = async () => {
-      //   try {
-      //     const response = await fetch("/api/emails"); // replace with your actual API endpoint
-      //     const data = await response.json();
-      //     setEmails(data);
-      //   } catch (error) {
-      //     console.error("Error fetching emails:", error);
-      //   }
-      // };
+      // Async function for fetching emails from our backend server
+      const fetchEmails = async () => {
+        try {
+          const response = await fetch("/api/emails"); // replace with your actual API endpoint
+          const data = await response.json();
+          setEmails(data);
+        } catch (error) {
+          console.error("Error fetching emails:", error);
+        }
+      };
   
-      // Uncomment the following line to fetch emails from your API or route
-      // fetchEmails();
+      // Comment out if we're testing
+      fetchEmails();
   
-      const randomUsernames = ["JohnDoe", "AliceSmith", "BobJohnson", "EvaWilliams"];
-      const randomIndex = Math.floor(Math.random() * randomUsernames.length);
-      setRandomUsername(randomUsernames[randomIndex]);
-  
-      // Use mock data for now
-      setEmails(mockEmails);
+    //   const randomUsernames = ["JohnDoe", "AliceSmith", "BobJohnson", "EvaWilliams"];
+    //   const randomIndex = Math.floor(Math.random() * randomUsernames.length);
+
+    //   setRandomUsername(randomUsernames[randomIndex]);
+    //   // Use mock data for now
+    //   setEmails(mockEmails);
     }, []);
 
   const handleComposeClick = () => {
