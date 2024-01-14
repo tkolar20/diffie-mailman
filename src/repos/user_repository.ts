@@ -51,7 +51,7 @@ export class UserRepository {
     static async updateKey(email: string, key: string): Promise<void> {
         return new Promise((resolve, reject) => {
             DataContext.context.serialize(() => {
-                DataContext.context.get<User>("SELECT UserID, Username, Password, Email FROM User WHERE Email = ?;", [email], (err, row) => {
+                DataContext.context.get<User>("SELECT UserID, Username, Password, Email FROM User WHERE Email = ?", [email], (err, row) => {
                     DataContext.context.run("UPDATE User SET Key = ? WHERE UserID = ?", [key, row.UserID], (err) => {
                         if (err) reject(err.message);
                         resolve();
