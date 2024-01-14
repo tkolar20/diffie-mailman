@@ -5,6 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node run run",
+    "dev": "concurrently \"npm run run\" \"npm run start-react\"",
+    "start-react": "cd client && npm start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "run": "node dist/server.js"
@@ -14,8 +17,10 @@
   "dependencies": {
     "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",
+    "concurrently": "^8.2.2",
     "crypto-browserify": "^3.12.0",
     "diffie-hellman": "^5.0.3",
+    "express": "^4.18.2",
     "sqlite3": "^5.1.7",
     "typescript": "^5.3.3",
     "ws": "^8.16.0"
