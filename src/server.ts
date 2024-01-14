@@ -4,6 +4,8 @@ import crypto from "crypto";
 import { ClientPubKey } from "./interfaces/IData.js";
 import sqlite3 from "sqlite3";
 import fs from "fs";
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from "cors";
 import express from "express";
 import AuthRouter from "./routes/Auth.js";
@@ -14,6 +16,11 @@ const wss = new WebSocketServer({ server: server });
 
 app.use(cors());
 app.use("/api", AuthRouter);
+
+const PORTREACT = process.env.PORT || 3001;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const db = new sqlite3.Database('db/main.db', sqlite3.OPEN_READWRITE, (err) =>
 {
@@ -65,8 +72,16 @@ wss.on('connection', ws =>
     });
 });
 
-const PORT = 3000;
-server.listen(PORT, () =>
-{
-    console.log(`Server listening on port ${ PORT }`);
+app.use(express.static(path.join(__dirname, '../client/build')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
+
+app.listen(PORTREACT, () => {
+  console.log(`Server is running on http://localhost:${PORTREACT}`);
+});
+
+const PORT = 4000;
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
