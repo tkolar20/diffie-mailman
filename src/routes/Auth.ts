@@ -1,6 +1,7 @@
 import { Request, Router, NextFunction } from "express";
 import { LoginData } from "../interfaces/IData.js";
-import { errorHandler } from "../routes/middleware/ErrorHandler.js";
+import { errorHandler } from "./middleware/ErrorHandler.js";
+
 var router = Router();
 
 router.post("/login", async (req: Request<unknown, unknown, LoginData, unknown>, res, next) =>
