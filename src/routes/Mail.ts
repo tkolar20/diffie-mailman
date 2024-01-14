@@ -1,14 +1,16 @@
 import { Request, Router, NextFunction } from "express";
 import { errorHandler } from "./middleware/ErrorHandler.js";
 import { AuthData } from "../interfaces/IData.js";
+import { EmailRepository } from "../repos/email_repository.js";
 
 const router = Router();
 
-router.get("/", async (req: Request<unknown, AuthData, unknown, unknown>, res, next) =>
+router.get("/", async (req: Request<unknown, unknown, AuthData, unknown>, res, next) =>
 {
     try
     {
-        const sender = req.body;
+        const sender = req.body.email;
+        res.json(await EmailRepository.getMailByEmail(sender));
     }
     catch(err)
     {
@@ -33,8 +35,8 @@ router.post("/", async (req, res, next) =>
 {
     try
     {
-        const { sender, destination, content } = req.body;
-
+        const { sender, destination, subject, content } = req.body;
+        res.json(await EmailRepository.createMail(sender, destination, subject, content));
     }
     catch(err)
     {
