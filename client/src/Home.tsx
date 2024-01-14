@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
+import ComposeForm from "./ComposeForm";
 
 interface Email {
   id: number;
@@ -10,6 +11,7 @@ interface Email {
 const Home: React.FC = () => {
   const [emails, setEmails] = useState<Email[]>([]);
   const [showComposeModal, setShowComposeModal] = useState(false);
+  const [randomUsername, setRandomUsername] = useState("");
 
   useEffect(() => {
     // Mock data for demonstration
@@ -33,6 +35,10 @@ const Home: React.FC = () => {
     // Uncomment the following line to fetch emails from your API or route
     // fetchEmails();
 
+    const randomUsernames = ["JohnDoe", "AliceSmith", "BobJohnson", "EvaWilliams"];
+    const randomIndex = Math.floor(Math.random() * randomUsernames.length);
+    setRandomUsername(randomUsernames[randomIndex]);
+
     // Use mock data for now
     setEmails(mockEmails);
   }, []);
@@ -47,8 +53,16 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <h1>Welcome to the Home Screen!</h1>
-      <p>This is a simple home screen.</p>
+      <div className="d-flex align-items-center">
+        <img
+          src="/logo/Diffe-Mailman-Empty.png" // Assuming your assets are served from the public folder
+          alt="Diffe-Mailman Logo"
+          style={{ width: "128px", height: "128px", marginRight: "15px" }}
+        />
+        <h1 className="mb-0">Diffie-Mailman</h1>
+      </div>
+
+      <p>Welcome to your inbox {randomUsername}.</p>
 
       <Button variant="primary" onClick={handleComposeClick}>
         Compose Email
@@ -63,24 +77,7 @@ const Home: React.FC = () => {
         ))}
       </ul>
 
-      {/* Compose Email Modal */}
-      <Modal show={showComposeModal} onHide={handleCloseComposeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Compose Email</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {/* Add your compose email form here */}
-          <p>This is where the compose email form will go.</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseComposeModal}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleCloseComposeModal}>
-            Send Email
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ComposeForm show={showComposeModal} onClose={handleCloseComposeModal} />
     </div>
   );
 };
