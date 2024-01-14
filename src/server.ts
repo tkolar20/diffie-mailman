@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import cors from "cors";
 import express from "express";
 import AuthRouter from "./routes/Auth.js";
+import MailRouter from "./routes/Mail.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +17,7 @@ const wss = new WebSocketServer({ server: server });
 
 app.use(cors());
 app.use("/api", AuthRouter);
+app.use("/api/mail", MailRouter);
 
 const PORTREACT = process.env.PORT || 3001;
 
