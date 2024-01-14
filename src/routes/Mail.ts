@@ -10,7 +10,12 @@ router.get("/", async (req: Request<unknown, unknown, AuthData, unknown>, res, n
     try
     {
         const sender = req.body.email;
-        res.json(await EmailRepository.getMailByEmail(sender));
+        const emails = await EmailRepository.getMailByEmail(sender);
+        res.json(emails);
+        /*for(const email of emails)
+        {
+
+        }*/
     }
     catch(err)
     {
