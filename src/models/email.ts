@@ -1,8 +1,8 @@
 export interface Email {
-    id?: number;
-    sender_id: number;
-    receiver_id: number;
-    subject: string;
-    body: string;
-    seen: boolean;
+    EmailID?: number;
+    SenderID: number;
+    ReceiverID: number;
+    Subject: string;
+    Body: string;
+    Seen: boolean;
 }

@@ -60,6 +60,24 @@ export class UserRepository {
         });
     }
 
+    static async getUserByEmail(email: string): Promise<User> {
+        return new Promise((resolve, reject) => {
+            DataContext.context.get<User>("SELECT UserID, Username, Password, Email FROM User WHERE Email = ?", [email], (err, row) => {
+                if (err) {
+                    console.log(err.message);
+                    return reject(err.message);
+                }
+                if (row != null) {
+                    return resolve(row);
+                }
+                else {
+                    console.log("get user null");
+                    return reject("get user null");
+                }
+            });
+        });
+    }
+
     static async loginUser(email: string, password: string): Promise<User> {
         return new Promise((resolve, reject) => {
             DataContext.context.get<User>("SELECT UserID, Username, Password, Email FROM User WHERE Email = ? AND Password = ?;", [email, password], (err, row) => {
