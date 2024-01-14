@@ -34,6 +34,20 @@ export class UserRepository {
         });
     }
 
+    static async getKeyByEmail(email: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            DataContext.context.get<Key>("SELECT Key FROM User WHERE Email = ?", [email], (err, row) => {
+                if (err) reject(err.message);
+                if (row != null) {
+                    resolve(row.Key);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    }
+
     static async updateKey(email: string, key: string): Promise<void> {
         return new Promise((resolve, reject) => {
             DataContext.context.serialize(() => {
