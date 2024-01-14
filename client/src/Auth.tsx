@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Home from "./Home";
 
 export default function Auth() {
   const [authMode, setAuthMode] = useState("signin");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const changeAuthMode = () => {
     setAuthMode(authMode === "signin" ? "signup" : "signin");
@@ -12,31 +15,46 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    var response: Response;
     try {
       if (authMode === "signin") {
         console.log("Logging in!");
-        response = await fetch("localhost:4000/api/login", {
+        var response = await fetch("http://localhost:4000/api/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email, password }),
-        });
-        console.log(response);
+        })
+          .then((data) => data.json())
+          .then((dataJSON) => {
+            console.log(dataJSON.Email);
+            document.cookie = `attributes=${JSON.stringify({
+              key: "email",
+              email: dataJSON.Email,
+            })}; path=/`;
+            navigate("/mail");
+          });
       } else {
         console.log("Registering");
-        response = await fetch("localhost:4000/api/register", {
+        response = await fetch("http://localhost:4000/api/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ username, email, password }),
-        });
-        console.log(response);
+        })
+          .then((data) => data.json())
+          .then((dataJSON) => {
+            console.log(dataJSON.Email);
+            document.cookie = `attributes=${JSON.stringify({
+              key: "email",
+              email: dataJSON.Email,
+            })}; path=/`;
+            navigate("/mail");
+          });
       }
 
-      if (response.ok) {
+      if (200) {
         // Successful request
         console.log("Data successfully sent!");
 
@@ -47,9 +65,9 @@ export default function Auth() {
       } else {
         // Handle error response
         console.error(
-          "Failed to send data. Server returned:",
-          response.status,
-          response.statusText
+          "Failed to send data. Server returned:"
+          // response.status,
+          // response.statusText
         );
       }
     } catch (error) {

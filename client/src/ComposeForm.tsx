@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
+import Cookies from "js-cookie";
 
 interface ComposeFormProps {
   show: boolean;
@@ -9,6 +10,7 @@ interface ComposeFormProps {
 const ComposeForm: React.FC<ComposeFormProps> = ({ show, onClose }) => {
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [destination, setDestination] = useState("");
 
   const handleSubjectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSubject(event.target.value);
@@ -18,14 +20,48 @@ const ComposeForm: React.FC<ComposeFormProps> = ({ show, onClose }) => {
     setBody(event.target.value);
   };
 
-  const handleSubmit = () => {
-    // Log the email data to the console for now
-    console.log("Subject:", subject);
-    console.log("Body:", body);
+  const handleDestinationChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setDestination(event.target.value);
+  };
 
-    // You can replace the console log with your data storage logic
-    // For example, send the data to a backend API or store it in a state management system
-    // For demonstration, we'll just log the data to the console
+  const handleSubmit = async () => {
+    let email = Cookies.get("attributes");
+
+    console.log(JSON.parse(email!).email);
+    console.log(destination);
+    console.log(subject);
+    console.log(body);
+    try {
+      const response = await fetch("http://localhost:4000/api/mail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: JSON.parse(email!).email,
+          destination: destination,
+          subject: subject,
+          body: body,
+        }),
+      });
+
+      if (response.ok) {
+        // Successful request
+        console.log("Email sent successfully!");
+      } else {
+        // Handle error response
+        console.error(
+          "Failed to send email. Server returned:",
+          response.status,
+          response.statusText
+        );
+      }
+    } catch (error) {
+      // Handle fetch error
+      console.error("Error sending email:", error);
+    }
   };
 
   return (
@@ -35,6 +71,16 @@ const ComposeForm: React.FC<ComposeFormProps> = ({ show, onClose }) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
+          <Form.Group className="mb-3" controlId="formDestination">
+            <Form.Label>Destination</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter recipient"
+              value={destination}
+              onChange={handleDestinationChange}
+            />
+          </Form.Group>
+
           <Form.Group className="mb-3" controlId="formSubject">
             <Form.Label>Subject</Form.Label>
             <Form.Control

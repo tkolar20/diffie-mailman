@@ -5,12 +5,12 @@ import { EmailRepository } from "../repos/email_repository.js";
 
 const router = Router();
 
-router.get("/", async (req: Request<unknown, unknown, AuthData, unknown>, res, next) =>
+router.get("/", async (req, res, next) =>
 {
     try
     {
-        const sender = req.body.email;
-        const emails = await EmailRepository.getMailByEmail(sender);
+        const sender = req.query.email;
+        const emails = await EmailRepository.getMailByEmail(sender as string);
         res.json(emails);
         /*for(const email of emails)
         {

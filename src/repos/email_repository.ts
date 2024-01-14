@@ -27,7 +27,7 @@ export class EmailRepository {
         return new Promise(async (resolve, reject) => {
             let user = await UserRepository.getUserByEmail(email);
 
-            DataContext.context.all<Email>("SELECT SenderID, ReceiverID, Subject, Body, Seen FROM Email WHERE ReceiverID = ?", [user.UserID], async (err, rows) => {
+            DataContext.context.all<Email>("SELECT EmailID, SenderID, ReceiverID, Subject, Body, Seen FROM Email WHERE ReceiverID = ?", [user.UserID], async (err, rows) => {
                 if (err) reject(err.message);
                 let emails: Array<EmailBox> = [];
                 if (rows.length != 0) {
@@ -51,6 +51,7 @@ export class EmailRepository {
                     for (let i = 0; i < rows.length; i++) {
                         let sender = await UserRepository.getUserById(rows[i].SenderID);
                         let mail: EmailBox = {
+                            id: rows[i].EmailID,
                             senderMail: sender.Email,
                             receiverMail: email,
                             subject: rows[i].Subject,
