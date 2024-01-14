@@ -4,6 +4,12 @@ import crypto from "crypto";
 import { ClientPubKey } from "./interfaces/IData.js";
 import sqlite3 from "sqlite3";
 import fs from "fs";
+import { DataContext } from "./repos/data_context.js";
+import { UserRepository } from "./repos/user_repository.js";
+import { EmailRepository } from "./repos/email_repository.js";
+import { User } from "./models/user.js";
+import { EmailBox } from "./models/email_box.js";
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from "cors";
@@ -24,31 +30,27 @@ const PORTREACT = process.env.PORT || 3001;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const db = new sqlite3.Database('db/main.db', sqlite3.OPEN_READWRITE, (err) =>
-{
-    if(err) return console.error(err.message);
-    console.log("Connected to database!");
-});
+await DataContext.initDb();
 
-db.serialize(() =>
+
+UserRepository.getUserByEmail("kolar@dm.com").then((res) =>
 {
-    const initSQL = fs.readFileSync("db/init.sql").toString().split(');');
-    db.run('PRAGMA foreign_keys=ON;');
-    // db.run('BEGIN TRANSACTION;');
-    initSQL.forEach((query =>
+    if(res != null) console.log(res.Password);
+    EmailRepository.getMailByEmail(res.Email).then((res) =>
     {
-        if(query)
+        if(res != null)
         {
-            // db.run('BEGIN TRANSACTION;');
-            console.log(query);
-            query += ");";
-            db.run(query, (err) =>
+            res.forEach(element =>
             {
-                if(err) throw err;
+                console.log(element.subject);
             });
         }
-        // db.run("COMMIT;");
-    }));
+        else
+        {
+            console.log("ZASTO SI NULL");
+        }
+    });
+
 });
 
 wss.on('connection', ws => 
