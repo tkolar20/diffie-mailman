@@ -5,6 +5,6 @@ export interface ClientPubKey
 
 export interface LoginData
 {
-    username: string;
+    email: string;
     password: string;
 }

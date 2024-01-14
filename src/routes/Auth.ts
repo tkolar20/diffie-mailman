@@ -1,16 +1,16 @@
-import {Request, Router, NextFunction} from "express"
+import { Request, Router, NextFunction } from "express";
 import { LoginData } from "../interfaces/IData.js";
-import { errorHandler } from "../routes/middleware/ErrorHandler.js"
+import { errorHandler } from "../routes/middleware/ErrorHandler.js";
 var router = Router();
 
-router.post("/login", async(req:Request<unknown, unknown, LoginData, unknown>, res, next) =>
+router.post("/login", async (req: Request<unknown, unknown, LoginData, unknown>, res, next) =>
 {
-    const {username, password} = req.body;
+    const { email, password } = req.body;
     try
     {
-        if(!(username|| password))
+        if(!(email || password))
         {
-            throw {status: 400, message: "Username and passowrd must be supplied!"};
+            throw { status: 400, message: "Username and passowrd must be supplied!" };
         }
         // check if exists
     }
@@ -20,16 +20,16 @@ router.post("/login", async(req:Request<unknown, unknown, LoginData, unknown>, r
     }
 });
 
-router.post("/register", async(req:Request<unknown, unknown, LoginData, unknown>, res, next) =>
+router.post("/register", async (req: Request<unknown, unknown, LoginData, unknown>, res, next) =>
 {
-    const {username, password} = req.body;
+    const { email, password } = req.body;
     try
     {
-        if(!(username|| password))
+        if(!(email || password))
         {
-            throw {status: 400, message: "Username and passowrd must be supplied!"};
+            throw { status: 400, message: "Username and passowrd must be supplied!" };
         }
-        // let the user in
+        // create user
     }
     catch(err)
     {
