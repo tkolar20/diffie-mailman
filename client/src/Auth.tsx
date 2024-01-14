@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 export default function Auth() {
   const [authMode, setAuthMode] = useState("signin");
-  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -10,16 +10,52 @@ export default function Auth() {
     setAuthMode(authMode === "signin" ? "signup" : "signin");
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    var response: Response;
+    try {
+      if (authMode === "signin") {
+        console.log("Logging in!");
+        response = await fetch("localhost:4000/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        console.log(response);
+      } else {
+        console.log("Registering");
+        response = await fetch("localhost:4000/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, email, password }),
+        });
+        console.log(response);
+      }
 
-    // Print the form data to the console for now
-    console.log("Form Data:", { authMode, fullName, email, password });
+      if (response.ok) {
+        // Successful request
+        console.log("Data successfully sent!");
 
-    // Reset the form fields if needed
-    setFullName("");
-    setEmail("");
-    setPassword("");
+        // Reset the form fields
+        setUsername("");
+        setEmail("");
+        setPassword("");
+      } else {
+        // Handle error response
+        console.error(
+          "Failed to send data. Server returned:",
+          response.status,
+          response.statusText
+        );
+      }
+    } catch (error) {
+      // Handle fetch error
+      console.error("Error sending data:", error);
+    }
   };
 
   return (
@@ -60,8 +96,8 @@ export default function Auth() {
                 type="text"
                 className="form-control mt-1"
                 placeholder="e.g johndoe123"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
           )}
