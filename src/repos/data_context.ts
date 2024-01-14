@@ -8,27 +8,30 @@ export class DataContext {
       console.log("Connected to database!");
     });
 
-     static initDb() {
-        DataContext.context.serialize(() =>
-        {
-          const initSQL = fs.readFileSync("db/init.sql").toString().split(';');
-          DataContext.context.run('PRAGMA foreign_keys=ON;');
-          // db.run('BEGIN TRANSACTION;');
-          initSQL.forEach((query =>
+    static async initDb(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            DataContext.context.serialize(() =>
             {
-              if(query)
-              {
-                DataContext.context.run('BEGIN TRANSACTION;');
-                console.log(query);
-                query += ";";
-                DataContext.context.run(query, (err) =>
+              const initSQL = fs.readFileSync("db/init.sql").toString().split(';');
+              // db.run('BEGIN TRANSACTION;');
+              initSQL.forEach((query =>
                 {
-                  if(err) throw err;
-                });
-                DataContext.context.run("COMMIT;");
-              }
-              // db.run("COMMIT;");
-            }));
+                  if(query)
+                  {
+                    DataContext.context.run('BEGIN TRANSACTION;');
+                    DataContext.context.run('PRAGMA foreign_keys=ON;');
+                    query += ";";
+                    console.log(query);
+                    DataContext.context.run(query, (err) =>
+                    {
+                      if(err) reject(err.message);
+                    });
+                    DataContext.context.run("COMMIT;");
+                  }
+                  // db.run("COMMIT;");
+                }));
+            });
+          resolve();  
         });
     }
 }

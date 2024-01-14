@@ -27,27 +27,47 @@ export class EmailRepository {
         return new Promise(async (resolve, reject) => {
             let user = await UserRepository.getUserByEmail(email);
 
-            DataContext.context.all<Email>("SELECT SenderID, ReceiverID, Subject, Body, Seen FROM Email WHERE ReceiverID = ?", (err, rows) => {
+            DataContext.context.all<Email>("SELECT SenderID, ReceiverID, Subject, Body, Seen FROM Email WHERE ReceiverID = ?", [user.UserID], async (err, rows) => {
                 if (err) reject(err.message);
-                let emails: EmailBox[];
+                let emails: Array<EmailBox> = [];
                 if (rows.length != 0) {
-                    rows.forEach(async element => {
-                        let sender = await UserRepository.getUserById(element.SenderID);
+                    // rows.forEach(async element => {
+                    //     console.log(element.Subject);
+                    //     let sender = await UserRepository.getUserById(element.SenderID);
+                    //     let mail: EmailBox = {
+                    //         senderMail: sender.Email,
+                    //         receiverMail: email,
+                    //         subject: element.Subject,
+                    //         body: element.Body,
+                    //         seen: element.Seen
+                    //     };
+                    //     emails.push(mail);
+                    //     if (!element.Seen) {
+                    //         DataContext.context.run("UPDATE Email SET Seen = 1 WHERE EmailID = ?", [element.EmailID], (err) => {
+                    //             if (err) reject(err.message);
+                    //         });
+                    //     }
+                    // });
+                    for (let i = 0; i < rows.length; i++) {
+                        let sender = await UserRepository.getUserById(rows[i].SenderID);
                         let mail: EmailBox = {
                             senderMail: sender.Email,
                             receiverMail: email,
-                            subject: element.Subject,
-                            body: element.Body,
-                            seen: element.Seen
-                        }
+                            subject: rows[i].Subject,
+                            body: rows[i].Body,
+                            seen: rows[i].Seen
+                        };
                         emails.push(mail);
-                        if (!element.Seen) {
-                            DataContext.context.run("UPDATE Email SET Seen = 1 WHERE EmailID = ?", [element.EmailID], (err) => {
+                        if (!rows[i].Seen) {
+                            DataContext.context.run("UPDATE Email SET Seen = 1 WHERE EmailID = ?", [rows[i].EmailID], (err) => {
                                 if (err) reject(err.message);
                             });
                         }
-                    });
+                    }
                     resolve(emails);
+                }
+                else {
+                    resolve(null);
                 }
             });
         });

@@ -13,7 +13,7 @@ export class UserRepository {
                 Password: password,
                 Email: email
             };
-            DataContext.context.run('INSERT INTO User (username, password, email) VALUES(?, ?, ?)', [username, password, email],  (err) => {
+            DataContext.context.run('INSERT INTO User (Username, Password, Email) VALUES(?, ?, ?)', [username, password, email],  (err) => {
                 if (err) reject(err.message);
                 resolve(user);
             });
@@ -24,7 +24,12 @@ export class UserRepository {
         return new Promise((resolve, reject) => {
             DataContext.context.get<Key>("SELECT Key FROM User WHERE UserID = ?", [id], (err, row) => {
                 if (err) reject(err.message);
-                resolve(row.Key);
+                if (row != null) {
+                    resolve(row.Key);
+                }
+                else {
+                    resolve(null);
+                }
             });
         });
     }
@@ -54,7 +59,7 @@ export class UserRepository {
                 }
                 else {
                     console.log("get user null");
-                    return reject("get user null");
+                    return resolve(null);
                 }
             });
         });
@@ -72,7 +77,7 @@ export class UserRepository {
                 }
                 else {
                     console.log("get user null");
-                    return reject("get user null");
+                    return resolve(null);
                 }
             });
         });

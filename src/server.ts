@@ -6,49 +6,29 @@ import sqlite3 from "sqlite3";
 import fs from "fs";
 import { DataContext } from "./repos/data_context.js";
 import { UserRepository } from "./repos/user_repository.js";
+import { EmailRepository } from "./repos/email_repository.js";
+import { User } from "./models/user.js";
+import { EmailBox } from "./models/email_box.js";
 
 const server = http.createServer();
 const wss = new WebSocketServer({server:server});
 
-// const db = new sqlite3.Database('db/main.db', sqlite3.OPEN_READWRITE, (err) =>
-// {
-//   if(err) return console.error(err.message);
-//   console.log("Connected to database!");
-// });
+await DataContext.initDb();
 
-DataContext.initDb();
 
-// db.serialize(() =>
-// {
-//   const initSQL = fs.readFileSync("db/init.sql").toString().split(';');
-//   db.run('PRAGMA foreign_keys=ON;');
-//   // db.run('BEGIN TRANSACTION;');
-//   initSQL.forEach((query =>
-//     {
-//       if(query)
-//       {
-//         db.run('BEGIN TRANSACTION;');
-//         query += ";";
-//         console.log(query);
-//         db.run(query, (err) =>
-//         {
-//           if(err) throw err;
-//         });
-//         db.run("COMMIT;");
-//       }
-//     }));
-// });
-
-const repo: UserRepository = new UserRepository();
-const create = await UserRepository.createUser("test", "test", "testdm.com");
-const user = UserRepository.getUserById(1).then((user) => {
-  UserRepository.updateKey("testdm.com", "asdf").then(() => {
-    console.log(user.Email);
-    console.log(user.Username);
-    UserRepository.getKeyByUserId(user.UserID).then((key) => {
-      console.log(key);
-    });
+UserRepository.getUserByEmail("kolar@dm.com").then((res) => {
+  if (res != null) console.log(res.Password);
+  EmailRepository.getMailByEmail(res.Email).then((res) => {
+    if (res != null) {
+          res.forEach(element => {
+          console.log(element.subject);
+        });
+    }
+    else {
+      console.log("ZASTO SI NULL");
+    }
   });
+  
 });
 
 wss.on('connection', ws => 
