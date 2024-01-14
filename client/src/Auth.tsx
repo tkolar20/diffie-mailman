@@ -55,11 +55,11 @@ export default function Auth() {
           </div>
           {authMode === "signup" && (
             <div className="form-group mt-3">
-              <label>Full Name</label>
+              <label>Username</label>
               <input
                 type="text"
                 className="form-control mt-1"
-                placeholder="e.g Jane Doe"
+                placeholder="e.g johndoe123"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
