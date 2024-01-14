@@ -4,34 +4,45 @@ import crypto from "crypto";
 import { ClientPubKey } from "./interfaces/IData.js";
 import sqlite3 from "sqlite3";
 import fs from "fs";
+import { DataContext } from "./repos/data_context.js";
+import { UserRepository } from "./repos/user_repository.js";
+
 const server = http.createServer();
 const wss = new WebSocketServer({server:server});
 
-const db = new sqlite3.Database('db/main.db', sqlite3.OPEN_READWRITE, (err) =>
-{
-  if(err) return console.error(err.message);
-  console.log("Connected to database!");
-});
+// const db = new sqlite3.Database('db/main.db', sqlite3.OPEN_READWRITE, (err) =>
+// {
+//   if(err) return console.error(err.message);
+//   console.log("Connected to database!");
+// });
 
-db.serialize(() =>
-{
-  const initSQL = fs.readFileSync("db/init.sql").toString().split(');');
-  db.run('PRAGMA foreign_keys=ON;');
-  // db.run('BEGIN TRANSACTION;');
-  initSQL.forEach((query =>
-    {
-      if(query)
-      {
-        // db.run('BEGIN TRANSACTION;');
-        console.log(query);
-        query += ");";
-        db.run(query, (err) =>
-        {
-          if(err) throw err;
-        });
-      }
-      // db.run("COMMIT;");
-    }));
+DataContext.initDb();
+
+// db.serialize(() =>
+// {
+//   const initSQL = fs.readFileSync("db/init.sql").toString().split(';');
+//   db.run('PRAGMA foreign_keys=ON;');
+//   // db.run('BEGIN TRANSACTION;');
+//   initSQL.forEach((query =>
+//     {
+//       if(query)
+//       {
+//         db.run('BEGIN TRANSACTION;');
+//         query += ";";
+//         console.log(query);
+//         db.run(query, (err) =>
+//         {
+//           if(err) throw err;
+//         });
+//         db.run("COMMIT;");
+//       }
+//     }));
+// });
+
+const repo: UserRepository = new UserRepository();
+const create = repo.createUser("test", "test", "testdm.com");
+const user = repo.getUserById(1).then((user) => {
+  console.log(user.Email);
 });
 
 wss.on('connection', ws => 
