@@ -40,9 +40,15 @@ DataContext.initDb();
 // });
 
 const repo: UserRepository = new UserRepository();
-const create = repo.createUser("test", "test", "testdm.com");
-const user = repo.getUserById(1).then((user) => {
-  console.log(user.Email);
+const create = await UserRepository.createUser("test", "test", "testdm.com");
+const user = UserRepository.getUserById(1).then((user) => {
+  UserRepository.updateKey("testdm.com", "asdf").then(() => {
+    console.log(user.Email);
+    console.log(user.Username);
+    UserRepository.getKeyByUserId(user.UserID).then((key) => {
+      console.log(key);
+    });
+  });
 });
 
 wss.on('connection', ws => 

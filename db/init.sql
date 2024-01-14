@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS User (
     Username TEXT NOT NULL,
     Password TEXT NOT NULL,
     Email TEXT NOT NULL,
-    Aes TEXT
+    Key TEXT
 );
 CREATE TABLE IF NOT EXISTS Email (
     EmailID INTEGER PRIMARY KEY,

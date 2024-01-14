@@ -3,5 +3,4 @@ export interface User {
     Username: string;
     Password: string;
     Email: string;
-    Aes?: string;
 }
