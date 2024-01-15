@@ -9,7 +9,6 @@ import { UserRepository } from "./repos/user_repository.js";
 import { EmailRepository } from "./repos/email_repository.js";
 import { User } from "./models/user.js";
 import { EmailBox } from "./models/email_box.js";
-
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from "cors";
@@ -23,7 +22,7 @@ const wss = new WebSocketServer({ server: server });
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 app.use("/api", AuthRouter);
 app.use("/api/mail", MailRouter);
 
@@ -62,6 +61,7 @@ wss.on('connection', ws =>
 
     const serverDH = crypto.createDiffieHellman(tempPrime, 'base64');
     const serverPubKey = serverDH.generateKeys('hex');
+    console.log(serverPubKey);
     ws.send(JSON.stringify({
         "prime": tempPrime,
         "publickey": serverPubKey,
@@ -72,9 +72,12 @@ wss.on('connection', ws =>
         let clientData: ClientPubKey = JSON.parse(data.toString());
         if("publickey" in clientData)
         {
+            console.log(clientData.publickey);
             const sharedKey = serverDH.computeSecret(clientData.publickey, 'base64', 'base64');
             console.log("Shared secret:" + sharedKey);
-            const aesKey = crypto.createHash('sha256').update(sharedKey).digest();
+            const aesKey = crypto.createHash('sha256').update(sharedKey).digest('hex');
+            console.log(aesKey);
+            UserRepository.updateKey(clientData.email, aesKey.toString());
         }
     });
 });

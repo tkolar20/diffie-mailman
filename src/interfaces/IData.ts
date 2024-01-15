@@ -1,5 +1,6 @@
 export interface ClientPubKey
 {
+    email: string,
     publickey: string;
 }
 

@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Home from "./Home";
-import { DiffieHellman } from "./dh";
+//import { DiffieHellman } from "./dh";
+import cry from "crypto-browserify";
 import Cookies from "js-cookie";
-import { createHash } from "node:crypto";
+import { Buffer } from "buffer";
+import forge from "node-forge";
+import dh from "./dh";
+import { Key } from "./key";
+window.Buffer = window.Buffer || Buffer;
+//import { createHash } from "node:crypto";
 
 export default function Auth() {
   const [authMode, setAuthMode] = useState("signin");
@@ -35,7 +41,31 @@ export default function Auth() {
               key: "email",
               email: dataJSON.Email,
             })}; path=/`;
+            console.log("Socket");
+            const socket = new WebSocket("ws://localhost:4000");
+            socket.addEventListener("open", () => {
+              socket.addEventListener("message", (event) => {
+                const data = JSON.parse(event.data);
+                console.log(data);
+                if ("prime" in data) {
+                  const clientDH = dh.createDiffieHellman( data.prime, 'base64', data.generator, 'base64' );
+                    const publicKey = clientDH.generateKeys();
+                    socket.send( JSON.stringify( { "publickey": publicKey.toString( 'base64' ), "email":dataJSON.Email } ) );
+                    console.log( JSON.stringify( { "publickey": publicKey.toString( 'base64' ) } ) );
+                    console.log( "Server public key:" + data.publickey );
+                    const secret = clientDH.computeSecret( data.publickey );
+                    const realSecret = secret.toString( 'base64' );
+                    console.log( realSecret );
+                  
+                    var md = forge.md.sha256.create();
+                    md.update(realSecret);
+                    console.log(console.log("AesKey:" + md.digest().toHex()));
+                    const aesKey = md.digest();
+                    Key.aeskey = aesKey;
+                    console.log(Key.aeskey);
+                    socket.close();
             navigate("/mail");
+                }})});
           });
       } else {
         console.log("Registering");
@@ -53,38 +83,32 @@ export default function Auth() {
               key: "email",
               email: dataJSON.Email,
             })}; path=/`;
+            console.log("Socket");
             const socket = new WebSocket("ws://localhost:4000");
             socket.addEventListener("open", () => {
               socket.addEventListener("message", (event) => {
                 const data = JSON.parse(event.data);
                 console.log(data);
                 if ("prime" in data) {
-                  const clientDH = DiffieHellman(
-                    data.prime,
-                    "base64",
-                    data.generator,
-                    "base64"
-                  );
-                  const publicKey = clientDH.generateKeys();
-                  socket.send(
-                    JSON.stringify({ publickey: publicKey.toString("base64") })
-                  );
-                  console.log(
-                    JSON.stringify({ publickey: publicKey.toString("base64") })
-                  );
-                  const secret = clientDH.computeSecret(
-                    data.publicKey,
-                    "base64",
-                    "base64"
-                  );
-                  const aesKey = createHash("sha256").update(secret).digest();
-                  Cookies.set("aesKey", aesKey.toString());
-                  const retrievedAesKey = Cookies.get("aesKey");
-                  console.log("Retrieved AES Key:", retrievedAesKey);
+                  const clientDH = dh.createDiffieHellman( data.prime, 'base64', data.generator, 'base64' );
+                    const publicKey = clientDH.generateKeys();
+                    socket.send( JSON.stringify( { "publickey": publicKey.toString( 'base64' ), "email":dataJSON.Email } ) );
+                    console.log( JSON.stringify( { "publickey": publicKey.toString( 'base64' ) } ) );
+                    console.log( "Server public key:" + data.publickey );
+                    const secret = clientDH.computeSecret( data.publickey );
+                    const realSecret = secret.toString( 'base64' );
+                    console.log( realSecret );
+                  
+                    var md = forge.md.sha256.create();
+                    md.update(realSecret);
+                    console.log(console.log("AesKey:" + md.digest().toHex()));
+                    const aesKey = md.digest();
+                    Key.aeskey = aesKey;
+                    socket.close();
+                 navigate("/mail");
                 }
               });
             });
-            navigate("/mail");
           });
       }
 

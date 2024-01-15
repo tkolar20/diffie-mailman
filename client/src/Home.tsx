@@ -5,7 +5,8 @@ import ComposeForm from "./ComposeForm";
 import ExpandableList from "./ExpandableList";
 import { Link } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
-
+import { Key } from "./key";
+import forge from "node-forge";
 interface Email {
   id: number;
   subject: string;
@@ -65,15 +66,37 @@ const Home: React.FC = () => {
         );
         const data = await response.json();
         console.log(data);
+        for(let i = 0; i<data.length; i++)
+        {
+          console.log(data[i].body);
+          console.log(Key.aeskey);
+          console.log(Key.aeskey.length);
+          Key.aeskey.read = 0;
+          let cipher = forge.cipher.createCipher('AES-GCM', Key.aeskey);
+          cipher.start( { iv: "aaaaaaaaaaaaaaaa" } );
+          cipher.update( forge.util.createBuffer(data[i].body));
+          cipher.finish();
+          console.log(cipher.output);
+          data[i].body = cipher.output.data;
+        }
         setEmails(data);
       } catch (error) {
         console.error("Error fetching emails:", error);
       }
     };
-
+    
     // Comment out if we're testing
     fetchEmails();
-
+    for(let i = 0; i<emails.length; i++)
+    {
+        console.log(Key.aeskey);
+        console.log(Key.aeskey.length);
+        let cipher = forge.cipher.createCipher('AES-GCM',Key.aeskey);
+        cipher.start( { iv: "aaaaaaaaaaaaaaaa" } );
+        cipher.update( forge.util.createBuffer(emails[i].body ) );
+        cipher.finish();
+        emails[i].body = cipher.output.toString();
+    }
     //   const randomUsernames = ["JohnDoe", "AliceSmith", "BobJohnson", "EvaWilliams"];
     //   const randomIndex = Math.floor(Math.random() * randomUsernames.length);
 
@@ -136,6 +159,16 @@ const Home: React.FC = () => {
 
     // Uncomment the following line to fetch emails from your API or route
     fetchEmails();
+    emails.forEach(mail =>
+      {
+        console.log(Key.aeskey);
+        console.log(Key.aeskey.length);
+        let cipher = forge.cipher.createCipher('AES-GCM',Key.aeskey);
+        cipher.start( { iv: "aaaaaaaaaaaaaaaa" } );
+        cipher.update( forge.util.createBuffer(mail.body ) );
+        cipher.finish();
+        mail.body = cipher.output.toString();
+      });
   };
 
   return (

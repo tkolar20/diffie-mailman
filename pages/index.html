@@ -12,24 +12,27 @@
 <body>
     <script>
         //console.log(require('crypto').createHash('sha1').update('abc').digest('hex'));
-        const socket = new WebSocket('ws://localhost:3000');
+        const socket = new WebSocket( 'ws://localhost:4000' );
         //var yes = mylib.createDiffieHellman(128);
-        socket.addEventListener('open', () => {
+        socket.addEventListener( 'open', () =>
+        {
             // Receive server's public key
-            socket.addEventListener('message', event => {
-                const data = JSON.parse(event.data);
-                console.log(data);
-                if ('prime' in JSON.parse(event.data)) {
-                    const clientDH = mylib.createDiffieHellman(data.prime, 'base64', data.generator, 'base64');
+            socket.addEventListener( 'message', event =>
+            {
+                const data = JSON.parse( event.data );
+                console.log( data );
+                if ( 'prime' in JSON.parse( event.data ) )
+                {
+                    const clientDH = mylib.createDiffieHellman( data.prime, 'base64', data.generator, 'base64' );
                     const publicKey = clientDH.generateKeys();
-                    socket.send(JSON.stringify({ "publickey": publicKey.toString('base64') }));
-                    console.log(JSON.stringify({ "publickey": publicKey.toString('base64') }));
-                    console.log("Server public key:" + data.publickey);
-                    const secret = clientDH.computeSecret(data.publickey);
-                    console.log("Shared secret:" + secret.toString('base64'));
+                    socket.send( JSON.stringify( { "publickey": publicKey.toString( 'base64' ) } ) );
+                    console.log( JSON.stringify( { "publickey": publicKey.toString( 'base64' ) } ) );
+                    console.log( "Server public key:" + data.publickey );
+                    const secret = clientDH.computeSecret( data.publickey );
+                    console.log( "Shared secret:" + secret.toString( 'base64' ) );
                 }
-            });
-        });
+            } );
+        } );
     </script>
 </body>
 

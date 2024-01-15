@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import Cookies from "js-cookie";
-
+import { Key } from "./key";
+import forge from "node-forge";
 interface ComposeFormProps {
   show: boolean;
   onClose: () => void;
@@ -29,6 +30,13 @@ const ComposeForm: React.FC<ComposeFormProps> = ({ show, onClose }) => {
   const handleSubmit = async () => {
     let email = Cookies.get("attributes");
 
+    Key.aeskey.read = 0;
+    let cipher = forge.cipher.createCipher('AES-GCM', Key.aeskey);
+    cipher.start( { iv: "aaaaaaaaaaaaaaaa" } );
+    cipher.update( forge.util.createBuffer(body));
+    cipher.finish();
+    console.log(cipher.output.toHex());
+
     console.log(JSON.parse(email!).email);
     console.log(destination);
     console.log(subject);
@@ -43,7 +51,8 @@ const ComposeForm: React.FC<ComposeFormProps> = ({ show, onClose }) => {
           sender: JSON.parse(email!).email,
           destination: destination,
           subject: subject,
-          body: body,
+          content: cipher.output.toHex(),
+          tag: cipher.mode.tag.toHex(),
         }),
       });
 

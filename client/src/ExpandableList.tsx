@@ -12,9 +12,11 @@ interface Email {
 interface ExpandableListProps {
   emails: Email[];
 }
-
 const ExpandableList: React.FC<ExpandableListProps> = ({ emails }) => {
   const [openEmailId, setOpenEmailId] = useState<number | null>(null);
+  //let cipher = forge.cipher.createCipher('AES-GCM', forge.util.hexToBytes(Key.aeskey));
+
+
 
   const handleToggle = (emailId: number) => {
     setOpenEmailId(openEmailId === emailId ? null : emailId);
@@ -27,6 +29,7 @@ const ExpandableList: React.FC<ExpandableListProps> = ({ emails }) => {
     >
       <ul className="list-group mt-3">
         {emails.map((email) => (
+          
           <li
             key={email.id}
             className={`list-group-item clickable${
